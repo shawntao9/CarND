@@ -12,13 +12,9 @@
 
 from math import *
 import random
-import copy
-
-
 
 landmarks  = [[20.0, 20.0], [80.0, 80.0], [20.0, 80.0], [80.0, 20.0]]
 world_size = 100.0
-
 
 class robot:
     def __init__(self):
@@ -73,16 +69,16 @@ class robot:
         x %= world_size    # cyclic truncate
         y %= world_size
         
-        # # set particle
-        # res = robot()
-        # res.set(x, y, orientation)
-        # res.set_noise(self.forward_noise, self.turn_noise, self.sense_noise)
-        # return res
+        # set particle
+        res = robot()
+        res.set(x, y, orientation)
+        res.set_noise(self.forward_noise, self.turn_noise, self.sense_noise)
+        return res
 
-        self.x = x
-        self.y = y
-        self.orientation = orientation
-        self.set_noise(self.forward_noise, self.turn_noise, self.sense_noise)
+#         self.x = x
+#         self.y = y
+#         self.orientation = orientation
+#         self.set_noise(self.forward_noise, self.turn_noise, self.sense_noise)
     
     def Gaussian(self, mu, sigma, x):
         
@@ -144,11 +140,13 @@ for i in range(N):
 T = 10
 for i in range(T):
 
-    myrobot.move(0.1, 5.0)
+    myrobot = myrobot.move(0.1, 5.0)
     Z = myrobot.sense()
-
-    for particle in p:
-        particle.move(0.1, 5.0)
+    
+    p2 = []
+    for i in range(N):
+        p2.append(p[i].move(0.1, 5.0))
+    p = p2
 
     w = []
     for particle in p:
