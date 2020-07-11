@@ -79,11 +79,30 @@ class robot:
         # res.set_noise(self.forward_noise, self.turn_noise, self.sense_noise)
         # return res
 
-        self.x = x
-        self.y = y
-        self.orientation = orientation
+        self.set(x, y, orientation)
         self.set_noise(self.forward_noise, self.turn_noise, self.sense_noise)
     
+    def move2(self, turn, forward):
+        if forward < 0:
+            raise ValueError('Robot cant move backwards')         
+        
+        # turn, and add randomness to the turning command
+        orientation = self.orientation + float(turn) + random.gauss(0.0, self.turn_noise)
+        orientation %= 2 * pi
+        
+        # move, and add randomness to the motion command
+        dist = float(forward) + random.gauss(0.0, self.forward_noise)
+        x = self.x + (cos(orientation) * dist)
+        y = self.y + (sin(orientation) * dist)
+        x %= world_size    # cyclic truncate
+        y %= world_size
+        
+        # set particle
+        res = robot()
+        res.set(x, y, orientation)
+        res.set_noise(self.forward_noise, self.turn_noise, self.sense_noise)
+        return res
+
     def Gaussian(self, mu, sigma, x):
         
         # calculates the probability of x for 1-dim Gaussian with mean mu and var. sigma
@@ -116,9 +135,6 @@ def eval(r, p):
         sum += err
     return sum / float(len(p))
 
-
-
-
 # myrobot = robot()
 
 # myrobot.set(30.0, 50.0, pi/2)
@@ -144,12 +160,18 @@ for i in range(N):
 T = 10
 for i in range(T):
 
-    myrobot.move(0.1, 5.0)
+    # myrobot.move(0.1, 5.0)
+    myrobot = myrobot.move2(0.1, 5.0)
     Z = myrobot.sense()
 
-    for particle in p:
-        particle.move(0.1, 5.0)
+    p2 = []
+    for i in range(N):
+        p2.append(p[i].move2(0.1, 5.0))
+    p = p2
 
+    # for i in range(N):   
+    #     p[i].move(0.1, 5.0)
+        
     w = []
     for particle in p:
         w.append(particle.measurement_prob(Z))
@@ -168,5 +190,8 @@ for i in range(T):
         p3.append(p[index])
 
     p = p3
-    # print(p)
+
+    # for x in p:
+    #     print x
+    # print(len(p))
     print(eval(myrobot, p))
