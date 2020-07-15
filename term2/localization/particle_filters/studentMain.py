@@ -69,7 +69,6 @@ class robot:
         x %= world_size    # cyclic truncate
         y %= world_size
         
-<<<<<<< HEAD
         # # set particle
         # res = robot()
         # res.set(x, y, orientation)
@@ -78,18 +77,6 @@ class robot:
 
         self.set(x, y, orientation)
         self.set_noise(self.forward_noise, self.turn_noise, self.sense_noise)
-=======
-        # set particle
-        res = robot()
-        res.set(x, y, orientation)
-        res.set_noise(self.forward_noise, self.turn_noise, self.sense_noise)
-        return res
-
-#         self.x = x
-#         self.y = y
-#         self.orientation = orientation
-#         self.set_noise(self.forward_noise, self.turn_noise, self.sense_noise)
->>>>>>> 1fe7a0e83c03f5ee8fcfbcfa6c275dea6b20a0a7
     
     def move2(self, turn, forward):
         if forward < 0:
@@ -169,7 +156,6 @@ for i in range(N):
 T = 10
 for i in range(T):
 
-<<<<<<< HEAD
     # myrobot.move(0.1, 5.0)
     myrobot = myrobot.move2(0.1, 5.0)
     Z = myrobot.sense()
@@ -177,14 +163,6 @@ for i in range(T):
     p2 = []
     for i in range(N):
         p2.append(p[i].move2(0.1, 5.0))
-=======
-    myrobot = myrobot.move(0.1, 5.0)
-    Z = myrobot.sense()
-    
-    p2 = []
-    for i in range(N):
-        p2.append(p[i].move(0.1, 5.0))
->>>>>>> 1fe7a0e83c03f5ee8fcfbcfa6c275dea6b20a0a7
     p = p2
 
     # for i in range(N):   
@@ -208,13 +186,8 @@ for i in range(T):
         p3.append(p[index])
 
     p = p3
-<<<<<<< HEAD
 
     # for x in p:
     #     print x
     # print(len(p))
     print(eval(myrobot, p))
-=======
-    # print(p)
-    print(eval(myrobot, p))
->>>>>>> 1fe7a0e83c03f5ee8fcfbcfa6c275dea6b20a0a7
