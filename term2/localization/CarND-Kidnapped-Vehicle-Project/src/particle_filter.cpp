@@ -33,28 +33,23 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-
   if(is_initialized) return;
 
   // initialize numbers of particles
   num_particles = 100;
 
-  double std_x = std[0];
-  double std_y = std[1];
-  double std_theta = std[2];
-
   //create normal distribution
-  std::normal_distribution<double> dist_x(x, std_x);
-  std::normal_distribution<double> dist_y(y, std_y);
-  std::normal_distribution<double> dist_theta(theta, std_theta);
+  std::normal_distribution<double> dist_x(0, std[0]);
+  std::normal_distribution<double> dist_y(0, std[1]);
+  std::normal_distribution<double> dist_theta(0, std[2]);
 
   //generate particles with normal distribution (random Gaussian noise)
   for(int i = 0; i < num_particles; i++){
     Particle particle;
     particle.id = i;
-    particle.x = dist_x(gen);
-    particle.y = dist_y(gen);
-    particle.theta = dist_theta(gen);
+    particle.x = x + dist_x(gen);
+    particle.y = y + dist_y(gen);
+    particle.theta = theta + dist_theta(gen);
     particle.weight = 1.0;
 
     particles.push_back(particle);
@@ -122,7 +117,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
 
       if(distance < minDistance){
         minDistance = distance;
-        mapId = predicted[j].id;
+        mapId = p.id;
       }
     }
 
@@ -190,8 +185,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       //get x, y coordinates of landmarks
       for(unsigned int k = 0; k < inrangeLandmarks.size(); k++){
         if(inrangeLandmarks[k].id == landmark_id){
-          landmark_x = inrangeLandmarks[j].x;
-          landmark_y = inrangeLandmarks[j].y;
+          landmark_x = inrangeLandmarks[k].x;
+          landmark_y = inrangeLandmarks[k].y;
           break;
         }
       }
@@ -201,10 +196,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       double exponent = pow(landmark_x - o_x, 2) / (2 * pow(std_landmark[0], 2))
                         + pow(landmark_y - o_y, 2) / (2 * pow(std_landmark[1], 2));
       double weight = gauss_norm * exp(-exponent);
-
+      
       particles[i].weight *= weight;
-
     }
+    
   }
 }
 
@@ -239,6 +234,7 @@ void ParticleFilter::resample() {
       beta -= weights[index];
       index = (index + 1) % num_particles;
     }
+    
     resampledParticles.push_back(particles[index]);
   }
 
