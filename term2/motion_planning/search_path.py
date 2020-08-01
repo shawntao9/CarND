@@ -52,5 +52,48 @@ def searchOptimalPath(grid, init, goal):
         else:
                 return -1
 
-a = searchOptimalPath(grid, init, goal)
+# a = searchOptimalPath(grid, init, goal)
+# print(a)
+
+# print out the path
+def searchOptimalPath2(grid, init, goal):
+        m = len(grid) # row number
+        n = len(grid[0]) # column number
+        visited = [[False for i in range(n)] for i in range(m)]
+        reach = [[]]
+        reach[0].append(init)
+        path = []            
+
+        def helper(reach, path):
+                reach.append([])
+                for pos in reach[-2]:
+                        curPath = path[:]
+                        curPath.append(pos)
+                        visited[pos[0]][pos[1]] = True
+                        if pos[0] == goal[0] and pos[1] == goal[1]:
+                                return 
+                        for i in range(len(delta)):
+                                if pos[0] + delta[i][0] >= 0 and pos[0] + delta[i][0] < m \
+                                and pos[1] + delta[i][1] >= 0 and pos[1] + delta[i][1] < n:
+                                
+                                        newPos = [0] * 2
+                                        newPos[0] = pos[0] + delta[i][0]
+                                        newPos[1] = pos[1] + delta[i][1]
+                                        
+                                        if grid[newPos[0]][newPos[1]] == 0 and \
+                                                not visited[newPos[0]][newPos[1]] \
+                                                and newPos not in reach[-1]:
+                                                reach[-1].append(newPos)
+                        if reach[-1] != []:
+                                return helper(reach, curPath)
+                return path   
+        
+        optimalPath = helper(reach, path)
+        print(optimalPath)
+        if visited[goal[0]][goal[1]]:
+                return len(reach)-2
+        else:
+                return -1
+
+a = searchOptimalPath2(grid, init, goal)
 print(a)
