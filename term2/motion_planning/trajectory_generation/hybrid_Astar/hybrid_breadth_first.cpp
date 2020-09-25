@@ -17,6 +17,13 @@ HBF::HBF() {
 
 HBF::~HBF() {}
 
+bool HBF::compare_maze_s(const HBF::maze_s& lhs, const HBF::maze_s& rhs){
+  return lhs.f < rhs.f;
+}
+
+double HBF::heuristic(double x, double y, vector<int> goal){
+  return fabs(x - goal[1]) + fabs(y - goal[0]);
+}
 
 int HBF::theta_to_stack_number(double theta){
   /*
@@ -41,7 +48,7 @@ int HBF::idx(double float_num) {
 }
 
 
-vector<HBF::maze_s> HBF::expand(HBF::maze_s state) {
+vector<HBF::maze_s> HBF::expand(HBF::maze_s state, vector<int> goal) {
   int g = state.g;
   double x = state.x;
   double y = state.y;
@@ -62,6 +69,7 @@ vector<HBF::maze_s> HBF::expand(HBF::maze_s state) {
     double x2 = x + SPEED * cos(theta);
     double y2 = y + SPEED * sin(theta);
     HBF::maze_s state2;
+    state2.f = g2 + heuristic(x2, y2, goal);
     state2.g = g2;
     state2.x = x2;
     state2.y = y2;
@@ -115,6 +123,7 @@ HBF::maze_path HBF::search(vector< vector<int> > grid, vector<double> start, vec
   state.x = start[0];
   state.y = start[1];
   state.theta = theta;
+  state.f = g + heuristic(state.x, state.y, goal);
 
   closed[stack][idx(state.x)][idx(state.y)] = 1;
   came_from[stack][idx(state.x)][idx(state.y)] = state;
@@ -123,7 +132,7 @@ HBF::maze_path HBF::search(vector< vector<int> > grid, vector<double> start, vec
   bool finished = false;
   while(!opened.empty())
   {
-
+    sort(opened.begin(), opened.end(), compare_maze_s);
     maze_s current = opened[0]; //grab first elment
     opened.erase(opened.begin()); //pop first element
 
@@ -140,7 +149,7 @@ HBF::maze_path HBF::search(vector< vector<int> > grid, vector<double> start, vec
       return path;
 
     }
-    vector<maze_s> next_state = expand(current);
+    vector<maze_s> next_state = expand(current, goal);
 
     for(int i = 0; i < next_state.size(); i++)
     {
